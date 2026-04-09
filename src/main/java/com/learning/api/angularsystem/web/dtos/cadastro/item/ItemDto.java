@@ -1,5 +1,6 @@
 package com.learning.api.angularsystem.web.dtos.cadastro.item;
 
+import com.learning.api.angularsystem.enums.item.Tamanho;
 import com.learning.api.angularsystem.enums.item.TipoItem;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -27,11 +28,13 @@ public class ItemDto {
 
     private String modelo;
 
+    private Tamanho tamanho;
+
     private Double precoCusto;
 
     private Double precoVenda;
 
-    private Double estoque;
+    private int estoque;
 
     private int quantidade;
 

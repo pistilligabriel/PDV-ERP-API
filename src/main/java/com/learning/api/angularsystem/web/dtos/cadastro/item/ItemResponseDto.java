@@ -3,6 +3,7 @@ package com.learning.api.angularsystem.web.dtos.cadastro.item;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.learning.api.angularsystem.entitys.cadastro.item.Fabricante;
 import com.learning.api.angularsystem.entitys.cadastro.item.UnidadeMedida;
+import com.learning.api.angularsystem.enums.item.Tamanho;
 import com.learning.api.angularsystem.enums.item.TipoItem;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class ItemResponseDto {
     private TipoItem tipoProduto;
     private String observacao;
     private String modelo;
+    private Tamanho tamanho;
     private UnidadeMedida unidadeVenda;
     private Fabricante fabricante;
     private Double precoVenda;

@@ -2,6 +2,7 @@ package com.learning.api.angularsystem.services.empresa;
 
 import java.io.IOException;
 
+import com.learning.api.angularsystem.enums.TipoEmpresa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +45,7 @@ public class EmpresaService {
         return empresa.getLogo(); // Supondo que o campo logo seja byte[]
     }
 
-    public Empresa editarConfiguracao(String nomeEmpresa, MultipartFile file) {
+    public Empresa editarConfiguracao(String nomeEmpresa, MultipartFile file, TipoEmpresa tipoEmpresa) {
         Empresa empresa = obterConfiguracao();
 
         if (nomeEmpresa != null && !nomeEmpresa.isEmpty()) {
@@ -59,6 +60,11 @@ public class EmpresaService {
                 throw new RuntimeException("Erro ao processar o arquivo", e);
             }
         }
+
+        if (tipoEmpresa != null) {
+            empresa.setTipoEmpresa(tipoEmpresa);
+        }
+
         return empresaRepository.save(empresa);
     }
 }

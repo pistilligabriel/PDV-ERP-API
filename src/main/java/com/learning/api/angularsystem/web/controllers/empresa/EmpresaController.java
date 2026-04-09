@@ -2,7 +2,9 @@ package com.learning.api.angularsystem.web.controllers.empresa;
 
 
 import com.learning.api.angularsystem.entitys.empresa.Empresa;
+import com.learning.api.angularsystem.enums.TipoEmpresa;
 import com.learning.api.angularsystem.services.empresa.EmpresaService;
+import com.learning.api.angularsystem.web.dtos.empresa.EmpresaDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,9 +27,9 @@ public class EmpresaController {
 
 
     @GetMapping("/{id}")
-    public Map<String,String> getEmpresa(@PathVariable Long id) {
-        String configuracao = empresaService.obterNomeEmpresa(id);
-        return Map.of("nomeEmpresa",configuracao);
+    public ResponseEntity<Empresa> getEmpresa() {
+        Empresa configuracao = empresaService.obterConfiguracao();
+        return ResponseEntity.status(HttpStatus.OK).body(configuracao);
     }
 
     @GetMapping("/{id}/logo")
@@ -41,8 +43,9 @@ public class EmpresaController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Empresa> editarConfiguracao(   @RequestParam(value="file",required = false) MultipartFile file,
-                                                         @RequestParam("nomeEmpresa") String nomeEmpresa) {
-        Empresa empresa = empresaService.editarConfiguracao(nomeEmpresa, file);
+                                                         @RequestParam("nomeEmpresa") String nomeEmpresa,
+                                                         @RequestParam("tipoEmpresa") TipoEmpresa tipoEmpresa) {
+        Empresa empresa = empresaService.editarConfiguracao(nomeEmpresa, file,tipoEmpresa);
         return ResponseEntity.ok(empresa);
     }
 }

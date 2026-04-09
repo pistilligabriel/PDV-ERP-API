@@ -4,6 +4,7 @@ package com.learning.api.angularsystem.entitys.cadastro.item;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.learning.api.angularsystem.enums.Status;
+import com.learning.api.angularsystem.enums.item.Tamanho;
 import com.learning.api.angularsystem.enums.item.TipoItem;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,6 +42,10 @@ public class Item {
     @Enumerated(EnumType.STRING)
     private TipoItem tipoProduto;
 
+    @Column(name = "TAMANHO")
+    @Enumerated(EnumType.STRING)
+    private Tamanho tamanho;
+
     @Column(name = "OBSERVACAO")
     private String observacao;
 
@@ -64,7 +69,7 @@ public class Item {
     private Double margemLucro;
 
     @Column(name = "ESTOQUE")
-    private Double estoque;
+    private Integer estoque;
 
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
