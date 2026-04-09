@@ -60,6 +60,8 @@ public class ItemService {
         itemEntity.setPrecoVenda(item.getPrecoVenda());
         if (empresa.getTipoEmpresa() == TipoEmpresa.PECAS) {
             itemEntity.setEstoque(item.getEstoque());
+        }else {
+            itemEntity.setEstoque(1);
         }
 
         itemEntity.setMargemLucro(itemEntity.calcularMargemLucro());

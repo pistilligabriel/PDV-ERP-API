@@ -6,5 +6,7 @@ import lombok.Getter;
 public enum TipoPedido {
 
     NOVO,
-    RECAPAGEM
+    RECAPAGEM,
+    VENDA,
+    CONDICIONAL
 }
