@@ -29,7 +29,4 @@ public class Empresa {
     @Lob
     private byte[] logo;
 
-    @Column(name="TIPO_SISTEMA")
-    @Enumerated(EnumType.STRING)
-    private TipoEmpresa tipoEmpresa;
 }

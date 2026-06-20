@@ -15,6 +15,5 @@ import lombok.Setter;
 public class EmpresaDto {
     private String nomeEmpresa;
     private File logo;
-    private TipoEmpresa tipoEmpresa;
 }
 

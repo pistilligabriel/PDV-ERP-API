@@ -43,9 +43,8 @@ public class EmpresaController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Empresa> editarConfiguracao(   @RequestParam(value="file",required = false) MultipartFile file,
-                                                         @RequestParam("nomeEmpresa") String nomeEmpresa,
-                                                         @RequestParam("tipoEmpresa") TipoEmpresa tipoEmpresa) {
-        Empresa empresa = empresaService.editarConfiguracao(nomeEmpresa, file,tipoEmpresa);
+                                                         @RequestParam("nomeEmpresa") String nomeEmpresa) {
+        Empresa empresa = empresaService.editarConfiguracao(nomeEmpresa, file);
         return ResponseEntity.ok(empresa);
     }
 }

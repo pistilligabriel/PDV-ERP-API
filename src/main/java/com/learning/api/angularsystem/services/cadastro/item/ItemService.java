@@ -45,9 +45,6 @@ public class ItemService {
 
         itemEntity.setDataCadastro(LocalDateTime.now());
         itemEntity.setDescricao(item.getDescricao());
-        if (empresa.getTipoEmpresa() == TipoEmpresa.PECAS) {
-            itemEntity.setTipoProduto(item.getTipoProduto());
-        }
 
         itemEntity.setObservacao(item.getObservacao());
 
@@ -58,11 +55,8 @@ public class ItemService {
         }
 
         itemEntity.setPrecoVenda(item.getPrecoVenda());
-        if (empresa.getTipoEmpresa() == TipoEmpresa.PECAS) {
-            itemEntity.setEstoque(item.getEstoque());
-        }else {
-            itemEntity.setEstoque(1);
-        }
+
+        itemEntity.setEstoque(item.getEstoque());
 
         itemEntity.setMargemLucro(itemEntity.calcularMargemLucro());
 
@@ -126,9 +120,9 @@ public class ItemService {
         }
 
         itemAtualizar.setDescricao(dto.getDescricao());
-        if (empresa.getTipoEmpresa() == TipoEmpresa.PECAS) {
-            itemAtualizar.setTipoProduto(dto.getTipoProduto());
-        }
+
+        itemAtualizar.setTipoProduto(dto.getTipoProduto());
+
         itemAtualizar.setModelo(dto.getModelo());
 //        itemAtualizar.setGrupoItem(dto.getGrupoItem());
         itemAtualizar.setObservacao(dto.getObservacao());
