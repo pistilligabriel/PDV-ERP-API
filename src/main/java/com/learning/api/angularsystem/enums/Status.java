@@ -8,5 +8,7 @@ public enum Status {
     DESATIVADO,
     NORMAL,
     CANCELADO,
-    FINALIZADO
+    FINALIZADO,
+    ABERTO,
+    FECHADO
 }
