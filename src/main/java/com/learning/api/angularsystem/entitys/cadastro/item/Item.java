@@ -59,6 +59,9 @@ public class Item {
     @JsonIgnore
     private Fabricante fabricante;
 
+    @Column(name="CODIGO_BARRAS")
+    private String codigoBarras;
+
     @Column(name = "PRECO_CUSTO")
     private Double precoCusto;
 

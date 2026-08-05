@@ -12,8 +12,5 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 public class CaixaDto {
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-    private LocalDateTime dataAbertura = LocalDateTime.now();
-
-    private BigDecimal saldoInicial;
+    private Double saldoInicial;
 }

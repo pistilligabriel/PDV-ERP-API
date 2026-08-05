@@ -30,6 +30,8 @@ public class ItemDto {
 
     private Tamanho tamanho;
 
+    private String codigoBarras;
+
     private Double precoCusto;
 
     private Double precoVenda;

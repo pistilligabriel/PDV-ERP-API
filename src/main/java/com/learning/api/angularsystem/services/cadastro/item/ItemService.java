@@ -58,6 +58,8 @@ public class ItemService {
 
         itemEntity.setEstoque(item.getEstoque());
 
+        itemEntity.setCodigoBarras(item.getCodigoBarras());
+
         itemEntity.setMargemLucro(itemEntity.calcularMargemLucro());
 
         itemEntity.setModelo(item.getModelo());
@@ -126,6 +128,7 @@ public class ItemService {
         itemAtualizar.setModelo(dto.getModelo());
 //        itemAtualizar.setGrupoItem(dto.getGrupoItem());
         itemAtualizar.setObservacao(dto.getObservacao());
+        itemAtualizar.setCodigoBarras(dto.getCodigoBarras());
         itemAtualizar.setUnidadeVenda(unidadeService.getById(dto.getUnidadeVenda()));
         itemAtualizar.setFabricante(fabricanteService.getById(dto.getFabricante()));
         itemAtualizar.setPrecoCusto(dto.getPrecoCusto());
@@ -147,6 +150,10 @@ public class ItemService {
             item.setEstoque(item.getEstoque() + estoque);
         }
         return salvar(item);
+    }
+
+    public Item buscarProdutoCodigoBarras(String codigoBarras) {
+        return itemRepository.findByCodigoBarras(codigoBarras);
     }
 
 }

@@ -24,6 +24,7 @@ public class ItemResponseDto {
     private String observacao;
     private String modelo;
     private Tamanho tamanho;
+    private String codigoBarras;
     private UnidadeMedida unidadeVenda;
     private Fabricante fabricante;
     private Double precoVenda;

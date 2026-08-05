@@ -39,6 +39,12 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body(ItemMapper.toDto(item));
     }
 
+    @GetMapping("/codigo-barras/{codigoBarras}")
+    public ResponseEntity<ItemResponseDto> buscarProdutoCodigoBarras(@PathVariable String codigoBarras) {
+        Item item = itemService.buscarProdutoCodigoBarras(codigoBarras);
+        return ResponseEntity.status(HttpStatus.OK).body(ItemMapper.toDto(item));
+    }
+
     @PutMapping
     public ResponseEntity<ItemResponseDto> atualizarProduto(@RequestBody @Valid ItemDto itemDto) {
         Item item = itemService.editarItem(itemDto);

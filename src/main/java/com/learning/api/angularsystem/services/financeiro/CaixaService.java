@@ -19,6 +19,9 @@ public class CaixaService {
 
     @Transactional
     public Caixa abrirCaixa(Caixa caixa) {
+        if(_repository.existsByStatus(Status.ABERTO)){
+            throw new RuntimeException("Já existe um caixa aberto!");
+        }
         return _repository.save(caixa);
     }
 
