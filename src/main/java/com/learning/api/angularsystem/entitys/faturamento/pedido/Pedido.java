@@ -47,6 +47,9 @@ public class Pedido implements Serializable {
     @ManyToOne
     private Cliente integrante;
 
+    @Column(name = "NOME_CLIENTE")
+    private String nomeCliente;
+
     @Enumerated(EnumType.STRING)
     private TipoFormaPagamento formaPagamento;
 

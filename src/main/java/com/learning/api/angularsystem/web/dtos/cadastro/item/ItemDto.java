@@ -10,7 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class ItemDto {
-
     private Long codigo;
 
     private int grupoItem;

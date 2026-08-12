@@ -27,11 +27,35 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ItemMapper.toDto(item));
     }
 
+    @GetMapping("/gerar-codigo-barras")
+    public ResponseEntity<String> gerarCodigoBarras() {
+        System.out.println("Chegou no controller");
+        String codigo = itemService.gerarCodigoBarras();
+
+        return ResponseEntity.ok(codigo);
+    }
+
     @GetMapping
     public List<ItemResponseDto> listarProdutos() {
         List<Item> itens = itemService.listarProdutos();
         return ResponseEntity.status(HttpStatus.OK).body(ItemMapper.toListDto(itens)).getBody();
     }
+
+    @GetMapping("/venda")
+    public List<ItemResponseDto> listarProdutosVenda() {
+        List<Item> itens = itemService.listarProdutosVenda();
+        return ResponseEntity.status(HttpStatus.OK).body(ItemMapper.toListDto(itens)).getBody();
+    }
+
+    @GetMapping("/pesquisar")
+    public ResponseEntity<List<ItemResponseDto>> pesquisar(
+            @RequestParam String termo) {
+
+        List<Item> itens = itemService.pesquisar(termo);
+
+        return ResponseEntity.ok(ItemMapper.toListDto(itens));
+    }
+
 
     @GetMapping("/{codigo}")
     public ResponseEntity<ItemResponseDto> buscarProduto(@PathVariable Long codigo) {
@@ -45,15 +69,16 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body(ItemMapper.toDto(item));
     }
 
+
     @PutMapping
     public ResponseEntity<ItemResponseDto> atualizarProduto(@RequestBody @Valid ItemDto itemDto) {
         Item item = itemService.editarItem(itemDto);
         return ResponseEntity.status(HttpStatus.OK).body(ItemMapper.toDto(item));
     }
 
-    @PatchMapping("/acerto/{codigo}")
-    public ResponseEntity<ItemResponseDto> acertoEstoqueProduto(@PathVariable Long codigo, @RequestBody ItemDto dto){
-        Item item = itemService.acertoEstoqueProduto(codigo, dto.getEstoque());
+    @PatchMapping("/acerto/{codigo}/{qtdBaixa}")
+    public ResponseEntity<ItemResponseDto> acertoEstoqueProduto(@PathVariable Long codigo, @PathVariable int qtdBaixa) {
+        Item item = itemService.acertoEstoqueProduto(codigo, qtdBaixa);
         return ResponseEntity.status(HttpStatus.OK).body(ItemMapper.toDto(item));
     }
 
