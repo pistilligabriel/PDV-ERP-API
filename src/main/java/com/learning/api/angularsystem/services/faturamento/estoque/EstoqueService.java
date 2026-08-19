@@ -1,5 +1,6 @@
 package com.learning.api.angularsystem.services.faturamento.estoque;
 
+import com.learning.api.angularsystem.entitys.cadastro.item.Item;
 import com.learning.api.angularsystem.repositories.cadastro.integrante.IntegranteRepository;
 import com.learning.api.angularsystem.repositories.cadastro.item.ItemRepository;
 import com.learning.api.angularsystem.repositories.cadastro.item.UnidadeMedidaRepository;
@@ -7,6 +8,7 @@ import com.learning.api.angularsystem.repositories.faturamento.pedido.PedidoDeta
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EstoqueService {
@@ -108,5 +110,15 @@ public class EstoqueService {
 //
 //        return ResponseEntity.ok(new EstoqueDto(estoque));
         return null;
+    }
+
+    @Transactional
+    public void baixarEstoque(Item item, Integer quantidade){
+
+        if(item.getEstoque() < quantidade){
+            throw new RuntimeException("Estoque insuficiente.");
+        }
+
+        item.setEstoque(item.getEstoque() - quantidade);
     }
 }

@@ -5,11 +5,14 @@ import com.learning.api.angularsystem.entitys.cadastro.item.Item;
 import com.learning.api.angularsystem.entitys.faturamento.pedido.Pedido;
 import com.learning.api.angularsystem.entitys.faturamento.pedido.PedidoDetalhe;
 import com.learning.api.angularsystem.enums.Status;
+import com.learning.api.angularsystem.enums.pedido.TipoPedido;
 import com.learning.api.angularsystem.repositories.faturamento.pedido.PedidoDetalheRepository;
 import com.learning.api.angularsystem.repositories.faturamento.pedido.PedidoRepository;
 import com.learning.api.angularsystem.services.cadastro.integrante.IntegranteService;
 import com.learning.api.angularsystem.services.cadastro.item.ItemService;
+import com.learning.api.angularsystem.services.faturamento.estoque.EstoqueService;
 import com.learning.api.angularsystem.web.dtos.cadastro.item.ItemDto;
+import com.learning.api.angularsystem.web.dtos.faturamento.pedido.ItemVendaDto;
 import com.learning.api.angularsystem.web.dtos.faturamento.pedido.PedidoDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,70 +25,102 @@ import java.util.List;
 @Service
 public class PedidoService {
 
-    @Autowired
-    private PedidoRepository pedidoRepository;
 
-    @Autowired
-    private IntegranteService integranteService;
+    private final PedidoRepository pedidoRepository;
 
-    @Autowired
-    private ItemService itemService;
+    private final IntegranteService integranteService;
 
-    @Autowired
-    private PedidoDetalheRepository detalheRepository;
+    private final ItemService itemService;
+
+    private final PedidoDetalheRepository detalheRepository;
+
+    private final EstoqueService estoqueService;
+
+    public PedidoService(PedidoRepository pedidoRepository, IntegranteService integranteService, ItemService itemService, PedidoDetalheRepository detalheRepository, EstoqueService estoqueService) {
+        this.pedidoRepository = pedidoRepository;
+        this.integranteService = integranteService;
+        this.itemService = itemService;
+        this.detalheRepository = detalheRepository;
+        this.estoqueService = estoqueService;
+    }
 
     @Transactional
-    public Pedido criarPedido(PedidoDto pedidoDto) {
+    public Pedido criarPedido(PedidoDto dto) {
 
-        Cliente cliente = integranteService.getIntegranteById(pedidoDto.getIntegrante().getCodigo());
+        Cliente cliente = null;
 
-        // Inserção de informações do pedido geral
+        if(dto.getClienteId() != null){
+            cliente = integranteService.getIntegranteById(dto.getClienteId());
+        }
+
+        if(cliente == null && (dto.getNomeCliente() == null || dto.getNomeCliente().isBlank())){
+            throw new RuntimeException("Informe um cliente cadastrado ou o nome do cliente.");
+        }
+
         Pedido pedido = new Pedido();
-        pedido.setIntegrante(cliente);
-        pedido.setTipoVenda(pedidoDto.getTipoVenda());
-        pedido.setDataEmissao(LocalDateTime.now());
-        pedido.setFormaPagamento(pedidoDto.getFormaPagamento());
-        pedido.setParcelas(pedidoDto.getParcelas());
-        pedido.setPorcentagemDesconto(pedidoDto.getPorcentagemDesconto());
-        pedido.setDesconto(pedidoDto.getDesconto());
-        pedido.setTotalSemDesconto(pedidoDto.getTotalSemDesconto());
-        pedido.setTotal(pedidoDto.getTotal());
 
+        pedido.setIntegrante(cliente);
+        pedido.setNomeCliente(
+                dto.getNomeCliente() != null
+                        ? dto.getNomeCliente().trim()
+                        : null
+        );
+        pedido.setTipoVenda(TipoPedido.VENDA);
+        pedido.setFormaPagamento(dto.getFormaPagamento());
+        pedido.setParcelas(
+                dto.getParcelas() == null ? 1 : dto.getParcelas()
+        );
+        pedido.setDataEmissao(LocalDateTime.now());
 
         Pedido pedidoSalvo = pedidoRepository.save(pedido);
 
         int ordem = 1;
 
-        Double somaCusto = 0.0;
+        double total = 0;
+        double custo = 0;
 
-        for (ItemDto itemDto : pedidoDto.getProdutos()) {
-            // ⚠️ Buscar o item existente pelo código
-            Item itemExistente = itemService.buscarProduto(itemDto.getCodigo());
+        for (ItemVendaDto itemDto : dto.getItens()) {
 
-            // Inserção das informações do detalhe (Produtos) do pedido.
+            Item item = itemService.buscarProduto(itemDto.getProdutoId());
+
+            estoqueService.baixarEstoque(item, itemDto.getQuantidade());
+
             PedidoDetalhe detalhe = new PedidoDetalhe();
+
             detalhe.setPedido(pedidoSalvo);
-            detalhe.setItem(itemExistente);
-            detalhe.setDescricao(itemDto.getDescricao());
-            detalhe.setOrdem(ordem++);
+
+            detalhe.setItem(item);
+
+            detalhe.setDescricao(item.getDescricao());
+
             detalhe.setQuantidade(itemDto.getQuantidade());
-            detalhe.setValorUnitario(itemDto.getPrecoVenda());
-            detalhe.setValorTotal(itemDto.getPrecoVenda() * itemDto.getQuantidade());
-            itemExistente.setEstoque(itemDto.getEstoque() - itemDto.getQuantidade());
-            somaCusto += itemDto.getPrecoCusto() * itemDto.getQuantidade();
+
+            detalhe.setValorUnitario(item.getPrecoVenda());
+
+            detalhe.setValorTotal(item.getPrecoVenda() * itemDto.getQuantidade());
+
+            detalhe.setOrdem(ordem++);
 
             detalheRepository.save(detalhe);
+
+            total += detalhe.getValorTotal();
+
+            custo += item.getPrecoCusto() * itemDto.getQuantidade();
         }
 
-        pedido.setCusto(somaCusto);
+        pedido.setTotal(total);
 
-        if(pedidoDto.getParcelas() > 1){
-            pedido.setLucro((pedido.getCusto() / pedidoDto.getTotal()*100) / pedido.getParcelas());
-        }else {
-            pedido.setLucro(pedido.getCusto() / pedidoDto.getTotal() * 100);
-        }
+        pedido.setTotalSemDesconto(total);
 
-        return pedidoSalvo;
+        pedido.setDesconto(0.0);
+
+        pedido.setPorcentagemDesconto(0.0);
+
+        pedido.setCusto(custo);
+
+        pedido.setLucro(total - custo);
+
+        return pedidoRepository.save(pedido);
     }
 
     public ResponseEntity<Void> atualizarPedido(){
