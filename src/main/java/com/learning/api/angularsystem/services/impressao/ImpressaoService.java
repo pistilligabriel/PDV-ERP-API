@@ -2,6 +2,7 @@ package com.learning.api.angularsystem.services.impressao;
 
 import com.learning.api.angularsystem.entitys.cadastro.item.Item;
 import com.learning.api.angularsystem.services.cadastro.item.ItemService;
+import com.learning.api.angularsystem.web.dtos.impressao.EtiquetaProdutoDto;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -86,6 +87,74 @@ public class ImpressaoService {
         );
 
         windowsPrintService.imprimir(dados);
+    }
+
+    public void imprimirEtiqueta40x40(Item item) {
+
+        validarCodigo12(item.getCodigoBarras());
+
+        if (item.getDescricao() == null || item.getDescricao().isBlank()) {
+            throw new IllegalArgumentException("A descrição da etiqueta não pode ser vazia.");
+        }
+
+        if (item.getPrecoVenda() == null) {
+            throw new IllegalArgumentException("O preço da etiqueta não pode ser vazio.");
+        }
+
+
+
+        byte[] inicializacao = { 0x1B, 0x40 };
+        byte[] centralizar = { 0x1B, 0x61, 0x01 };
+
+        byte[] etiquetaBitmap = gerarBitmapEtiqueta40x40(
+                item.getDescricao(),
+                item.getCodigoBarras(),
+                String.valueOf(item.getPrecoVenda())
+        );
+
+        /*
+         * AJUSTE DE AVANÇO (GAP):
+         *
+         * 1. Comando ESC J (0x1B, 0x4A, n) avança 'n' dots (1 mm ≈ 8 dots).
+         *    Aumentamos aqui para avançar o espaço entre etiquetas.
+         */
+        byte[] avancarGapDots = {
+                0x1B,
+                0x4A,
+                (byte) 16 // Tente valores de 8 a 24 dots (1 mm a 3 mm)
+        };
+
+        byte[] esquerda = { 0x1B, 0x61, 0x00 };
+
+// Monte a sequência SEM quebras de linha '\n' no final
+        byte[] dados = concatenar(
+                inicializacao,
+                centralizar,
+                etiquetaBitmap,
+                avancarGapDots,
+                esquerda
+        );
+
+        windowsPrintService.imprimir(dados);
+    }
+
+    public void imprimirEtiquetas(EtiquetaProdutoDto request) {
+
+        request.getEtiquetas().forEach((codigoItem, quantidade) -> {
+
+            if (quantidade == null || quantidade <= 0) {
+                throw new IllegalArgumentException(
+                        "A quantidade de etiquetas deve ser maior que zero."
+                );
+            }
+
+            Item item = itemService.buscarProduto(codigoItem);
+
+            for (int i = 0; i < quantidade; i++) {
+                imprimirEtiqueta40x40(item);
+//                System.out.println("Imprimindo etiqueta do item: " + item.getCodigo());
+            }
+        });
     }
 
     // ============================================================

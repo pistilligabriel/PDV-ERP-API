@@ -62,14 +62,14 @@ public class ItemService {
 
         itemEntity.setMargemLucro(itemEntity.calcularMargemLucro());
 
-        itemEntity.setModelo(item.getModelo());
+//        itemEntity.setModelo(item.getModelo());
 
-        itemEntity.setTamanho(item.getTamanho());
+//        itemEntity.setTamanho(item.getTamanho());
 
-        Fabricante fabricante = fabricanteService.getById(item.getFabricante());
+        Fabricante fabricante = fabricanteService.getById(1L);
         itemEntity.setFabricante(fabricante);
 
-        UnidadeMedida unidade = unidadeService.getById(item.getUnidadeVenda());
+        UnidadeMedida unidade = unidadeService.getById(1L);
         itemEntity.setUnidadeVenda(unidade);
         return itemRepository.save(itemEntity);
     }
@@ -128,9 +128,9 @@ public class ItemService {
 
         itemAtualizar.setDescricao(dto.getDescricao());
 
-        itemAtualizar.setTipoProduto(dto.getTipoProduto());
-
-        itemAtualizar.setModelo(dto.getModelo());
+//        itemAtualizar.setTipoProduto(dto.getTipoProduto());
+//
+//        itemAtualizar.setModelo(dto.getModelo());
 //        itemAtualizar.setGrupoItem(dto.getGrupoItem());
         itemAtualizar.setObservacao(dto.getObservacao());
         itemAtualizar.setCodigoBarras(dto.getCodigoBarras());
@@ -146,16 +146,45 @@ public class ItemService {
     }
 
     @Transactional
-    public Item acertoEstoqueProduto(Long codigo, int estoque) {
+    public Item entradaEstoqueProduto(Long codigo, int quantidade) {
         Item item = buscarProduto(codigo);
-        if (item.getStatus().equals(Status.ATIVO)) {
-            if (item.getEstoque() + estoque < 0) {
-                throw new RuntimeException("Quantidade não pode ser negativa");
-            }
-            item.setEstoque(item.getEstoque() + estoque);
-        }
+
+        validarProdutoAtivo(item);
+        validarQuantidade(quantidade);
+
+        item.setEstoque(item.getEstoque() + quantidade);
+
         return salvar(item);
     }
+
+    @Transactional
+    public Item saidaEstoqueProduto(Long codigo, int quantidade) {
+        Item item = buscarProduto(codigo);
+
+        validarProdutoAtivo(item);
+        validarQuantidade(quantidade);
+
+        if (item.getEstoque() < quantidade) {
+            throw new RuntimeException("Estoque insuficiente");
+        }
+
+        item.setEstoque(item.getEstoque() - quantidade);
+
+        return salvar(item);
+    }
+
+    private void validarProdutoAtivo(Item item) {
+        if (item.getStatus() != Status.ATIVO) {
+            throw new RuntimeException("Produto está inativo");
+        }
+    }
+
+    private void validarQuantidade(int quantidade) {
+        if (quantidade <= 0) {
+            throw new RuntimeException("Quantidade deve ser maior que zero");
+        }
+    }
+
 
     public Item buscarProdutoCodigoBarras(String codigoBarras) {
         return itemRepository.findByCodigoBarras(codigoBarras);

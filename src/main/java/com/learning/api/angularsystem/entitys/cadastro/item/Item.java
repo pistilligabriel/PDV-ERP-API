@@ -28,23 +28,8 @@ public class Item {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime dataCadastro = LocalDateTime.now();
 
-    @Column(name="MODELO")
-    private String modelo;
-
-    @ManyToOne
-    @JoinColumn(name = "GRUPO_ITEM")
-    private ItemGrupo grupoItem;
-
     @Column(name = "DESCRICAO")
     private String descricao;
-
-    @Column(name="TIPO_PRODUTO")
-    @Enumerated(EnumType.STRING)
-    private TipoItem tipoProduto;
-
-    @Column(name = "TAMANHO")
-    @Enumerated(EnumType.STRING)
-    private Tamanho tamanho;
 
     @Column(name = "OBSERVACAO")
     private String observacao;
@@ -59,7 +44,7 @@ public class Item {
     @JsonIgnore
     private Fabricante fabricante;
 
-    @Column(name="CODIGO_BARRAS")
+    @Column(name = "CODIGO_BARRAS")
     private String codigoBarras;
 
     @Column(name = "PRECO_CUSTO")
@@ -85,6 +70,19 @@ public class Item {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime versao = LocalDateTime.now();
 
+    //   MODO SISTEMA AVANÇADO
+    //    @Column(name="TIPO_PRODUTO")
+    //    @Enumerated(EnumType.STRING)
+    //    private TipoItem tipoProduto;
+
+    //    @Column(name = "TAMANHO")
+    //    @Enumerated(EnumType.STRING)
+    //    private Tamanho tamanho;
+
+
+    //    @Column(name="MODELO")
+    //    private String modelo;
+
 
     public void setStatusAtivo() {
         this.status = Status.ATIVO;
@@ -96,7 +94,7 @@ public class Item {
         this.versao = LocalDateTime.now();
     }
 
-    public Double calcularMargemLucro(){
+    public Double calcularMargemLucro() {
         precoCusto = getPrecoCusto();
         precoVenda = getPrecoVenda();
         return ((precoVenda - precoCusto) / precoCusto) * 100;

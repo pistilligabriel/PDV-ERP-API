@@ -5,19 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class EtiquetaProdutoDto {
 
-    private Long produtoId;
-
-    private String descricao;
-
-    private String codigoBarras;
-
-    private Double precoVenda;
-
-    private Integer quantidade;
+    private Map<Long,Integer> etiquetas;
 }

@@ -1,6 +1,7 @@
 package com.learning.api.angularsystem.web.controllers.impressao;
 
 import com.learning.api.angularsystem.services.impressao.ImpressaoService;
+import com.learning.api.angularsystem.web.dtos.impressao.EtiquetaProdutoDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,17 @@ public class ImpressaoController {
 
         return ResponseEntity.ok(
                 "Código de barras EAN-13 enviado para a POS-58."
+        );
+    }
+
+    @PostMapping("/imprimir-etiquetas")
+    public ResponseEntity<String> imprimirEtiquetas(
+            @RequestBody EtiquetaProdutoDto request) {
+
+        impressaoService.imprimirEtiquetas(request);
+
+        return ResponseEntity.ok(
+                "Etiquetas enviadas para impressão."
         );
     }
 }

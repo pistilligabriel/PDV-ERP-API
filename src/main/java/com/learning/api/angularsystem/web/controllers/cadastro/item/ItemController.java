@@ -76,10 +76,24 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body(ItemMapper.toDto(item));
     }
 
-    @PatchMapping("/acerto/{codigo}/{qtdBaixa}")
-    public ResponseEntity<ItemResponseDto> acertoEstoqueProduto(@PathVariable Long codigo, @PathVariable int qtdBaixa) {
-        Item item = itemService.acertoEstoqueProduto(codigo, qtdBaixa);
-        return ResponseEntity.status(HttpStatus.OK).body(ItemMapper.toDto(item));
+    @PatchMapping("/entrada/{codigo}/{quantidade}")
+    public ResponseEntity<ItemResponseDto> entradaEstoqueProduto(
+            @PathVariable Long codigo,
+            @PathVariable int quantidade) {
+
+        Item item = itemService.entradaEstoqueProduto(codigo, quantidade);
+
+        return ResponseEntity.ok(ItemMapper.toDto(item));
+    }
+
+    @PatchMapping("/saida/{codigo}/{quantidade}")
+    public ResponseEntity<ItemResponseDto> saidaEstoqueProduto(
+            @PathVariable Long codigo,
+            @PathVariable int quantidade) {
+
+        Item item = itemService.saidaEstoqueProduto(codigo, quantidade);
+
+        return ResponseEntity.ok(ItemMapper.toDto(item));
     }
 
     @PostMapping("/alterar-status/{codigo}")
