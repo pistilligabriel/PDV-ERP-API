@@ -19,10 +19,20 @@ public class ImpressaoController {
     @PostMapping("/teste")
     public ResponseEntity<String> imprimirTeste() {
 
-        impressaoService.imprimirTeste();
+//        impressaoService.imprimirTeste();
 
         return ResponseEntity.ok(
                 "Impressão enviada para a POS-58."
+        );
+    }
+
+    @PostMapping("/imprimir-etiqueta/{codigoItem}")
+    public ResponseEntity<String> imprimirCodigoBarrasTeste(@PathVariable Long codigoItem) {
+
+        impressaoService.imprimirEtiqueta40x40(codigoItem);
+
+        return ResponseEntity.ok(
+                "Código de barras EAN-13 enviado para a POS-58."
         );
     }
 }
