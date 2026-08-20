@@ -4,6 +4,9 @@ import com.learning.api.angularsystem.enums.item.Tamanho;
 import com.learning.api.angularsystem.enums.item.TipoItem;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -31,14 +34,14 @@ public class ItemDto {
 
     private String codigoBarras;
 
-    private Double precoCusto;
+    private BigDecimal precoCusto;
 
-    private Double precoVenda;
+    private BigDecimal precoVenda;
 
     private int estoque;
 
     private int quantidade;
 
-    private Double margemLucro;
+    private BigDecimal margemLucro;
 
 }

@@ -11,6 +11,7 @@ import com.learning.api.angularsystem.web.dtos.cadastro.item.ItemDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class ItemService {
         itemEntity.setObservacao(item.getObservacao());
 
         if (item.getPrecoCusto() == null) {
-            itemEntity.setPrecoCusto(0.0);
+            itemEntity.setPrecoCusto(new BigDecimal(0));
         } else {
             itemEntity.setPrecoCusto(item.getPrecoCusto());
         }
@@ -134,8 +135,8 @@ public class ItemService {
 //        itemAtualizar.setGrupoItem(dto.getGrupoItem());
         itemAtualizar.setObservacao(dto.getObservacao());
         itemAtualizar.setCodigoBarras(dto.getCodigoBarras());
-        itemAtualizar.setUnidadeVenda(unidadeService.getById(dto.getUnidadeVenda()));
-        itemAtualizar.setFabricante(fabricanteService.getById(dto.getFabricante()));
+        itemAtualizar.setUnidadeVenda(unidadeService.getById(1L));
+        itemAtualizar.setFabricante(fabricanteService.getById(1L));
         itemAtualizar.setPrecoCusto(dto.getPrecoCusto());
         itemAtualizar.setPrecoVenda(dto.getPrecoVenda());
         itemAtualizar.setVersao(LocalDateTime.now());

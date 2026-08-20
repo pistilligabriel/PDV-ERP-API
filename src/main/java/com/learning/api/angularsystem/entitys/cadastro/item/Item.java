@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 @Entity
@@ -98,7 +99,15 @@ public class Item {
     public BigDecimal calcularMargemLucro() {
         precoCusto = getPrecoCusto();
         precoVenda = getPrecoVenda();
-        return ((precoVenda.subtract(precoCusto)).divide(precoCusto)).multiply(BigDecimal.valueOf(100));
+
+        if (precoCusto == null || precoCusto.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+
+        return precoVenda
+                .subtract(precoCusto)
+                .divide(precoCusto, 2, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
     }
 
 }
