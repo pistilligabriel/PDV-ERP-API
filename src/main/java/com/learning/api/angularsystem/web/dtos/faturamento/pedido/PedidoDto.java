@@ -6,6 +6,7 @@ import com.learning.api.angularsystem.enums.movimentacao.TipoFormaPagamento;
 import com.learning.api.angularsystem.enums.pedido.TipoPedido;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,9 +28,9 @@ public class PedidoDto {
 
     private Status status;
 
-    private Double total;
+    private BigDecimal total;
 
-    private Double totalSemDesconto;
+    private BigDecimal totalSemDesconto;
 
     private TipoFormaPagamento formaPagamento;
 

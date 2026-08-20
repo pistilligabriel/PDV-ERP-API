@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -62,22 +63,20 @@ public class Pedido implements Serializable {
     @Column(name = "PORCENTAGEM_DESCONTO")
     private Double porcentagemDesconto;
 
-    @Column(name = "TOTAL")
-    @Formula("(valorUnitario * quantidade)")
-    private Double total;
+    @Column(name = "TOTAL", precision = 15, scale = 2)
+    private BigDecimal total;
 
-    @Column(name = "TOTAL_BRUTO")
-    @Formula("(valorUnitario * quantidade)")
-    private Double totalSemDesconto;
+    @Column(name = "TOTAL_BRUTO", precision = 15, scale = 2)
+    private BigDecimal totalSemDesconto;
 
     @Column(name = "PARCELAS")
     private int parcelas;
 
-    @Column(name = "LUCRO")
-    private Double lucro;
+    @Column(name = "LUCRO",precision=15,scale=2)
+    private BigDecimal lucro;
 
-    @Column(name = "CUSTO")
-    private Double custo;
+    @Column(name = "CUSTO",precision = 15,scale = 2)
+    private BigDecimal custo;
 
     @Column(name = "EMPRESA")
     private Long empresa = 1L;

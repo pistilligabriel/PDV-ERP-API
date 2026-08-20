@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -72,12 +73,13 @@ public class PedidoService {
         );
         pedido.setDataEmissao(LocalDateTime.now());
 
+
         Pedido pedidoSalvo = pedidoRepository.save(pedido);
 
         int ordem = 1;
 
-        double total = 0;
-        double custo = 0;
+        BigDecimal total = new BigDecimal(0);
+        BigDecimal custo = new BigDecimal(0);
 
         for (ItemVendaDto itemDto : dto.getItens()) {
 
@@ -97,15 +99,15 @@ public class PedidoService {
 
             detalhe.setValorUnitario(item.getPrecoVenda());
 
-            detalhe.setValorTotal(item.getPrecoVenda() * itemDto.getQuantidade());
+            detalhe.setValorTotal(item.getPrecoVenda().multiply(new BigDecimal(itemDto.getQuantidade())));
 
             detalhe.setOrdem(ordem++);
 
             detalheRepository.save(detalhe);
 
-            total += detalhe.getValorTotal();
+            total = total.add(detalhe.getValorTotal());
 
-            custo += item.getPrecoCusto() * itemDto.getQuantidade();
+            custo = custo.add(item.getPrecoCusto()).multiply(new BigDecimal(itemDto.getQuantidade()));
         }
 
         pedido.setTotal(total);
@@ -118,7 +120,7 @@ public class PedidoService {
 
         pedido.setCusto(custo);
 
-        pedido.setLucro(total - custo);
+        pedido.setLucro(total.subtract(custo));
 
         return pedidoRepository.save(pedido);
     }
@@ -212,4 +214,4 @@ public class PedidoService {
 
         return pedidoRepository.save(pedido);
     }
-}
+    }

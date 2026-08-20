@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -47,14 +48,14 @@ public class Item {
     @Column(name = "CODIGO_BARRAS")
     private String codigoBarras;
 
-    @Column(name = "PRECO_CUSTO")
-    private Double precoCusto;
+    @Column(name = "PRECO_CUSTO",precision = 15, scale = 2)
+    private BigDecimal precoCusto;
 
-    @Column(name = "PRECO_VENDA")
-    private Double precoVenda;
+    @Column(name = "PRECO_VENDA",precision = 15, scale = 2)
+    private BigDecimal precoVenda;
 
-    @Column(name = "MARGEM_LUCRO")
-    private Double margemLucro;
+    @Column(name = "MARGEM_LUCRO",precision = 15,scale = 2)
+    private BigDecimal margemLucro;
 
     @Column(name = "ESTOQUE")
     private Integer estoque;
@@ -94,10 +95,10 @@ public class Item {
         this.versao = LocalDateTime.now();
     }
 
-    public Double calcularMargemLucro() {
+    public BigDecimal calcularMargemLucro() {
         precoCusto = getPrecoCusto();
         precoVenda = getPrecoVenda();
-        return ((precoVenda - precoCusto) / precoCusto) * 100;
+        return ((precoVenda.subtract(precoCusto)).divide(precoCusto)).multiply(BigDecimal.valueOf(100));
     }
 
 }

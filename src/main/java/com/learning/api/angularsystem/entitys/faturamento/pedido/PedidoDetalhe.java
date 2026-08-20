@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Formula;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "pedido_detalhe")
@@ -46,12 +47,11 @@ public class PedidoDetalhe implements Serializable {
     @Column(name = "QUANTIDADE")
     private int quantidade;
 
-    @Column(name = "VALOR_UNITARIO")
-    private Double valorUnitario;
+    @Column(name = "VALOR_UNITARIO", precision = 15, scale = 2)
+    private BigDecimal valorUnitario;
 
-    @Column(name = "VALOR_TOTAL")
-    @Formula("(valorUnitario * quantidade)")
-    private Double valorTotal;
+    @Column(name = "VALOR_TOTAL", precision = 15, scale = 2)
+    private BigDecimal valorTotal;
 
 
 }
