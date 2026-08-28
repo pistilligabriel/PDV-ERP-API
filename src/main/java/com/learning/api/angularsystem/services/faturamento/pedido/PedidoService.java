@@ -12,6 +12,8 @@ import com.learning.api.angularsystem.services.cadastro.integrante.IntegranteSer
 import com.learning.api.angularsystem.services.cadastro.item.ItemService;
 import com.learning.api.angularsystem.services.faturamento.estoque.EstoqueService;
 import com.learning.api.angularsystem.web.dtos.cadastro.item.ItemDto;
+import com.learning.api.angularsystem.web.dtos.dashboard.DashboardVendasResponseDTO;
+import com.learning.api.angularsystem.web.dtos.dashboard.VendaPorPagamentoDTO;
 import com.learning.api.angularsystem.web.dtos.faturamento.pedido.ItemVendaDto;
 import com.learning.api.angularsystem.web.dtos.faturamento.pedido.PedidoDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoService {
@@ -213,5 +217,55 @@ public class PedidoService {
         });
 
         return pedidoRepository.save(pedido);
+    }
+
+    @Transactional(readOnly = true)
+    public DashboardVendasResponseDTO obterDadosDashboard(LocalDateTime inicio, LocalDateTime fim) {
+        List<Pedido> pedidos = pedidoRepository.findByDataEmissaoBetweenWithDetalhes(inicio, fim);
+
+        // 1. Quantidade de vendas (excluindo os cancelados, se necessário)
+        long quantidadeVendas = pedidos.stream()
+                .filter(p -> p.getStatus() != Status.CANCELADO)
+                .count();
+
+        // 2. Valor vendido (soma do campo 'total' do pedido)
+        BigDecimal valorVendido = pedidos.stream()
+                .filter(p -> p.getStatus() != Status.CANCELADO)
+                .map(Pedido::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // 3. Quantidade de produtos (soma da quantidade de cada item dentro dos detalhes)
+        long quantidadeProdutos = pedidos.stream()
+                .filter(p -> p.getStatus() != Status.CANCELADO)
+                .flatMap(p -> p.getDetalhes().stream())
+                .filter(d -> d.getStatus() != Status.CANCELADO)
+                .mapToLong(PedidoDetalhe::getQuantidade)
+                .sum();
+
+        // 4. Ticket médio
+        BigDecimal ticketMedio = BigDecimal.ZERO;
+        if (quantidadeVendas > 0) {
+            ticketMedio = valorVendido.divide(BigDecimal.valueOf(quantidadeVendas), 2, java.math.RoundingMode.HALF_UP);
+        }
+
+        // 5. Agrupamento por forma de pagamento
+        Map<String, BigDecimal> agrupadoPorPagamento = pedidos.stream()
+                .filter(p -> p.getStatus() != Status.CANCELADO)
+                .collect(Collectors.groupingBy(
+                        p -> p.getFormaPagamento() != null ? p.getFormaPagamento().name() : "Não Informado",
+                        Collectors.mapping(Pedido::getTotal, Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))
+                ));
+
+        List<VendaPorPagamentoDTO> vendasPorPagamento = agrupadoPorPagamento.entrySet().stream()
+                .map(entry -> new VendaPorPagamentoDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+
+        return new DashboardVendasResponseDTO(
+                quantidadeVendas,
+                valorVendido,
+                quantidadeProdutos,
+                ticketMedio,
+                vendasPorPagamento
+        );
     }
     }

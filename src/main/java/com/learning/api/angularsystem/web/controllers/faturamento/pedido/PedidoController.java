@@ -4,6 +4,7 @@ import com.learning.api.angularsystem.entitys.faturamento.pedido.Pedido;
 import com.learning.api.angularsystem.entitys.faturamento.pedido.PedidoDetalhe;
 import com.learning.api.angularsystem.repositories.faturamento.pedido.PedidoRepository;
 import com.learning.api.angularsystem.services.faturamento.pedido.PedidoService;
+import com.learning.api.angularsystem.web.dtos.dashboard.DashboardVendasResponseDTO;
 import com.learning.api.angularsystem.web.dtos.faturamento.pedido.DetalheResponseDto;
 import com.learning.api.angularsystem.web.dtos.faturamento.pedido.PedidoDetalheDto;
 import com.learning.api.angularsystem.web.dtos.faturamento.pedido.PedidoDto;
@@ -11,10 +12,14 @@ import com.learning.api.angularsystem.web.dtos.faturamento.pedido.ResponsePedido
 import com.learning.api.angularsystem.web.dtos.faturamento.pedido.mapper.PedidoMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,4 +76,15 @@ public class PedidoController {
         return ResponseEntity.ok(PedidoMapper.toDto(detalhe));
     }
 
+    @GetMapping("/dashboard")
+    public ResponseEntity<DashboardVendasResponseDTO> obterDashboard(
+            @RequestParam("dataInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam("dataFim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+
+        LocalDateTime inicio = dataInicio.atStartOfDay();
+        LocalDateTime fim = dataFim.atTime(LocalTime.MAX);
+
+        DashboardVendasResponseDTO response = pedidoService.obterDadosDashboard(inicio, fim);
+        return ResponseEntity.ok(response);
+    }
 }
