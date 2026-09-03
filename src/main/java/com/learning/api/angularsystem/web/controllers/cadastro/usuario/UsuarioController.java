@@ -3,6 +3,7 @@ package com.learning.api.angularsystem.web.controllers.cadastro.usuario;
 
 import com.learning.api.angularsystem.entitys.cadastro.usuario.Usuario;
 import com.learning.api.angularsystem.enums.usuario.Tipo;
+import com.learning.api.angularsystem.web.dtos.cadastro.usuario.AlterarSenhaDto;
 import com.learning.api.angularsystem.web.dtos.cadastro.usuario.UsuarioAtualizarDto;
 import com.learning.api.angularsystem.web.dtos.cadastro.usuario.UsuarioDto;
 import com.learning.api.angularsystem.services.cadastro.usuario.UsuarioService;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/usuarios")
@@ -42,6 +44,12 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponseDto> buscarUsuario(@PathVariable Long codigo) {
         Usuario usuario = service.getById(codigo);
         return ResponseEntity.status(HttpStatus.OK).body(UsuarioMapper.toDto(usuario));
+    }
+
+    @PostMapping("/alterar-senha")
+    public ResponseEntity<Map<String,String>> alterarSenha(@RequestBody AlterarSenhaDto request){
+            service.alterarSenha(request);
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message","Senha alterada com sucesso!"));
     }
 
     @PutMapping

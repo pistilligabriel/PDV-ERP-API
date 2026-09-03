@@ -4,6 +4,7 @@ import com.learning.api.angularsystem.entitys.cadastro.usuario.Usuario;
 import com.learning.api.angularsystem.enums.Status;
 import com.learning.api.angularsystem.enums.usuario.Tipo;
 import com.learning.api.angularsystem.repositories.cadastro.usuario.UsuarioRepository;
+import com.learning.api.angularsystem.web.dtos.cadastro.usuario.AlterarSenhaDto;
 import com.learning.api.angularsystem.web.dtos.cadastro.usuario.UsuarioAtualizarDto;
 import com.learning.api.angularsystem.web.dtos.cadastro.usuario.UsuarioDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.security.auth.login.CredentialException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -119,6 +121,24 @@ public class UsuarioService {
         usuario.setToken(null);
 
         return repository.save(usuario);
+    }
+
+    @Transactional
+    public void alterarSenha(AlterarSenhaDto request) throws RuntimeException {
+        Usuario usuario = buscarPorLogin(request.getLogin());
+
+        boolean validarSenha = new BCryptPasswordEncoder().matches(request.getPassword(), usuario.getPassword());
+
+        if(usuario.getStatus().equals(Status.ATIVO) && validarSenha){
+            if(request.getNewPassword().equals(request.getConfirmPassword())){
+                usuario.setPassword(new BCryptPasswordEncoder().encode(request.getNewPassword()));
+                repository.save(usuario);
+            }else{
+                throw new RuntimeException("As senhas não conferem!");
+            }
+        }else{
+            throw new RuntimeException("Senha do usuário incorreta!");
+        }
     }
 
 }
